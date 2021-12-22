@@ -49,6 +49,9 @@ jobs:
           - os: ubuntu-20.04
             arch: auto64
             gpu: ON
+          - os: ubuntu-20.04
+            arch: aarch64
+            gpu: ON
 
     steps:
       - uses: actions/checkout@v2
