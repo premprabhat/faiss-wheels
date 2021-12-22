@@ -19,25 +19,33 @@ fi
 # Setup CUDA build environment
 if [[ ${FAISS_ENABLE_GPU} == "ON" ]]; then
     echo "Installing CUDA toolkit"
-    yum -y install yum-utils && \
-        yum-config-manager --add-repo ${NVIDIA_REPO_URL} && \
-        yum repolist && \
-        yum -y install \
-            cuda-command-line-tools-${CUDA_PKG_VERSION} \
-            cuda-cublas-dev-${CUBLAS_PKG_VERSION} \
-            devtoolset-7-gcc \
-            devtoolset-7-gcc-c++ \
-            devtoolset-7-gcc-gfortran \
-            devtoolset-7-binutils
+    if [[ $(uname -m) == "aarch64" ]]; then
+    wget https://developer.download.nvidia.com/compute/cuda/11.5.1/local_installers/cuda-repo-rhel8-11-5-local-11.5.1_495.29.05-1.aarch64.rpm
+    sudo rpm -i cuda-repo-rhel8-11-5-local-11.5.1_495.29.05-1.aarch64.rpm
+    sudo dnf clean all
+    sudo dnf -y module install nvidia-driver:latest-dkms
+    sudo dnf -y install cuda
+    else
+        yum -y install yum-utils && \
+            yum-config-manager --add-repo ${NVIDIA_REPO_URL} && \
+            yum repolist && \
+            yum -y install \
+                cuda-command-line-tools-${CUDA_PKG_VERSION} \
+                cuda-cublas-dev-${CUBLAS_PKG_VERSION} \
+                devtoolset-7-gcc \
+                devtoolset-7-gcc-c++ \
+                devtoolset-7-gcc-gfortran \
+                devtoolset-7-binutils
 
-    ln -s cuda-${CUDA_VERSION} /usr/local/cuda && \
-        echo "/usr/local/cuda/lib64" >> /etc/ld.so.conf.d/cuda.conf && \
-        echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
-        echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf && \
-        ldconfig
+        ln -s cuda-${CUDA_VERSION} /usr/local/cuda && \
+           echo "/usr/local/cuda/lib64" >> /etc/ld.so.conf.d/cuda.conf && \
+           echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+           echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf && \
+           ldconfig
 
-    export PATH="/opt/rh/devtoolset-7/root/usr/bin:/usr/local/cuda/bin:${PATH}"
-    export CUDAFLAGS="--compiler-options=-fvisibility=hidden,-fdata-sections,-ffunction-sections"
+        export PATH="/opt/rh/devtoolset-7/root/usr/bin:/usr/local/cuda/bin:${PATH}"
+        export CUDAFLAGS="--compiler-options=-fvisibility=hidden,-fdata-sections,-ffunction-sections"
+    fi
 fi
 
 # Install system dependencies
