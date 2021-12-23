@@ -21,7 +21,7 @@ if [[ ${FAISS_ENABLE_GPU} == "ON" ]]; then
     echo "Installing CUDA toolkit"
     if [[ $(uname -m) == "aarch64" ]]; then
     yum install -y wget sudo
-    wget https://developer.download.nvidia.com/compute/cuda/11.5.1/local_installers/cuda-repo-rhel8-11-5-local-11.5.1_495.29.05-1.aarch64.rpm
+    wget -q https://developer.download.nvidia.com/compute/cuda/11.5.1/local_installers/cuda-repo-rhel8-11-5-local-11.5.1_495.29.05-1.aarch64.rpm
     sudo rpm -i cuda-repo-rhel8-11-5-local-11.5.1_495.29.05-1.aarch64.rpm
     sudo dnf clean all
     sudo dnf -y module install nvidia-driver:latest-dkms
